@@ -1,12 +1,12 @@
 ## Description
 
-/widget/PaPmRunFunction - Custom widget definition file that should be uploaded to SAC(already done on master-integration)
+/widget/PaPmRunFunction.json - Custom widget definition file that should be uploaded to SAC(already done on master-integration). In case widget is used on a different system, domain needs to be added to CORS_ORIGIN in /src/main.ts
 
 /widget/main.js - widged methods
 
 /widget/builder.js - builder panel of the widget
 
-/widget/analyticApplication.js - sample code that should be added to Analityc Application for runing a widget method. It should be triggerd on some event, for example onClick event of a button. run() is a widget method and it executes runAsync() and shows messages once run is finished. Widget does not support Object Array as output parameter, therefore, string Array is used with element in format MSGTY###MSG_TEXT and needs to be splited.
+/widget/analyticApplication.js - sample code that should be added to Analityc Application for runing a widget method. It should be triggerd on some event, for example onClick event of a button. run() is a widget method and it executes runAsync() and shows messages once run is finished. Widget does not support Object Array as output parameter, therefore, string Array is used with element in format MSGTY###MSG_TEXT and needs to be split.
 
 ## Installation
 
