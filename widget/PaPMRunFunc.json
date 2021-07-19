@@ -6,19 +6,19 @@
   "license": "",
   "id": "papm.run.func",
   "newInstancePrefix": "RunFunc",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "webcomponents": [
     {
       "kind": "main",
       "tag": "papm-run-func",
-      "url": "https://dekikostic.github.io/sac/papm_run_func/main.js",
+      "url": "https://dekikostic.github.io/papm-widget/widget/main.js",
       "integrity": "",
       "ignoreIntegrity": true
     },
     {
       "kind": "builder",
       "tag": "papm-run-func-builder",
-      "url": "https://dekikostic.github.io/sac/papm_run_func/builder.js",
+      "url": "https://dekikostic.github.io/papm-widget/widget/builder.js",
       "integrity": "",
       "ignoreIntegrity": true
     }
