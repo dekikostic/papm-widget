@@ -16,7 +16,7 @@ copy code bellow this point to event handler( e.g. button onClick)
 */
 
 var almsg = RunFunc_1.run();
-var msgty = ApplicationMessageType.Success;
+var msgty = ApplicationMessageType.Info;
 
 for (var i = 0; i < almsg.length; i++) {
   switch (almsg[i].split('###')[0]) {
@@ -30,6 +30,9 @@ for (var i = 0; i < almsg.length; i++) {
     case 'I':
       msgty = ApplicationMessageType.Info;
       break;
+    case "S":
+			msgty = ApplicationMessageType.Success;
+			break;
   }
 
   Application.showMessage(msgty, almsg[i].split('###').pop());
