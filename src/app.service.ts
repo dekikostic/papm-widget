@@ -6,22 +6,32 @@ import 'dotenv/config.js';
 // import {} from 'dotenv/config';
 // require('dotenv').config();
 
+
+const URL_PREFIX = "https://papm-cloud-api-";
+const DEFAULT_SYSTEM = "qam-papm";
+const DEFAULT_TENANT = "prod-dev";
+const DOMAIN = ".cfapps.eu10.hana.ondemand.com/sap/opu/odata/NXI/"
+
 @Injectable()
 export class AppService {
   async RunAsync(runParam: RunParam) {
-    const tokenRequest = await fetch(process.env.AUTH_URL, {
+    const system = runParam.system !== undefined ? runParam.system : DEFAULT_SYSTEM;
+    const tenant = runParam.tenant !== undefined ? runParam.tenant : DEFAULT_TENANT;
+    const authUrl = `https://${system}.${process.env.AUTH_URL}`;
+    const base_auth = tenant === DEFAULT_TENANT ? process.env.BASIC_AUTH_PROD_DEV : process.env.BASIC_AUTH_PROD_POV;
+
+    const tokenRequest = await fetch(authUrl, {
       method: 'post',
       headers: {
-        Authorization: process.env.BASIC_AUTH,
+        Authorization: base_auth,
       },
     });
 
     const tokenResponse = await tokenRequest.json();
     const token = tokenResponse.access_token;
 
-    const runRequest = await fetch(
-      `${process.env.BASE_URL}/RunAsync?EnvId=${runParam.EnvId}&Ver=${runParam.Ver}&ProcId=''&Activity=''&Fid=${runParam.Fid}`,
-      {
+    const runUrl = `${URL_PREFIX}${tenant}${DOMAIN}P1_N_MOD_SRV/RunAsync?EnvId=${runParam.EnvId}&Ver=${runParam.Ver}&ProcId=''&Activity=''&Fid=${runParam.Fid}`
+    const runRequest = await fetch(runUrl, {
         method: 'post',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -31,11 +41,11 @@ export class AppService {
 
     const runResponse = await runRequest.json();
     const runId = runResponse.d.Content.RUN_ID;
-
+    
     let encodedUrl = encodeURI(
-      `${process.env.ODATA_BASE_URL}/Entities/AL?$filter=RUN_ID eq '${runId}'`,
+      `${URL_PREFIX}${tenant}${DOMAIN}P1_N_APP_ODATA_SRV/Entities/AL?$filter=RUN_ID eq '${runId}'`,
     );
-
+    
     let runState = 'RUNNING';
 
     while (runState === 'RUNNING') {
@@ -51,9 +61,8 @@ export class AppService {
     }
 
     encodedUrl = encodeURI(
-      `${process.env.ODATA_BASE_URL}/Entities/ALMSG?$filter=RUN_ID eq '${runId}'`,
+      `${URL_PREFIX}${tenant}${DOMAIN}P1_N_APP_ODATA_SRV/Entities/ALMSG?$filter=RUN_ID eq '${runId}'`,
     );
-
     const almsgRequest = await fetch(encodedUrl, {
       headers: {
         Authorization: `Bearer ${token}`,

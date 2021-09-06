@@ -48,6 +48,18 @@
   "methods": {
     "run": {
       "description": "Run PaPM Function",
+      "parameters": [
+				{
+					"name": "system",
+					"type": "string",
+					"description": ""
+				},
+        {
+					"name": "tenant",
+					"type": "string",
+					"description": ""
+				}
+			],
       "returnType": "string[]"
     }
   },
