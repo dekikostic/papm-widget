@@ -4,6 +4,6 @@ export type RunParam = {
   procId: string;
   activity: string;
   Fid: string;
-  system?:string;
-  tenant?:string;
+  tenant?: string;
+  space?: string;
 };

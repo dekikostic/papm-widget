@@ -7,18 +7,18 @@ import 'dotenv/config.js';
 // require('dotenv').config();
 
 const URL_PREFIX = 'https://papm-cloud-api-';
-const DEFAULT_SYSTEM = 'qam-papm';
-const DEFAULT_TENANT = 'prod-dev';
+const DEFAULT_TENANT = 'qam-papm';
+const DEFAULT_SPACE = 'prod-dev';
 const DOMAIN = '.cfapps.eu10.hana.ondemand.com/sap/opu/odata/NXI/';
 
 @Injectable()
 export class AppService {
   async RunAsync(runParam: RunParam) {
-    const system =
-      runParam.system !== undefined ? runParam.system : DEFAULT_SYSTEM;
     const tenant =
       runParam.tenant !== undefined ? runParam.tenant : DEFAULT_TENANT;
-    const authUrl = `https://${system}.${process.env.AUTH_URL}`;
+    const space = runParam.space !== undefined ? runParam.space : DEFAULT_SPACE;
+
+    const authUrl = `https://${tenant}.${process.env.AUTH_URL}`;
     const base_auth =
       tenant === DEFAULT_TENANT
         ? process.env.BASIC_AUTH_PROD_DEV
@@ -34,7 +34,7 @@ export class AppService {
 
     console.log(token);
 
-    const runUrl = `${URL_PREFIX}${tenant}${DOMAIN}P1_N_MOD_SRV/RunAsync?EnvId=${runParam.EnvId}&Ver=${runParam.Ver}&ProcId=''&Activity=''&Fid=${runParam.Fid}`;
+    const runUrl = `${URL_PREFIX}${tenant}.${space}${DOMAIN}P1_N_MOD_SRV/RunAsync?EnvId=${runParam.EnvId}&Ver=${runParam.Ver}&ProcId=''&Activity=''&Fid=${runParam.Fid}`;
     const runRequest = await fetch(runUrl, {
       method: 'post',
       headers: {
@@ -53,13 +53,13 @@ export class AppService {
 
     while (runState === 'RUNNING') {
       await new Promise((resolve) => setTimeout(resolve, 50));
-      let alRequest = await fetch(encodedUrl, {
+      const alRequest = await fetch(encodedUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      let alResponse = await alRequest.json();
+      const alResponse = await alRequest.json();
       runState = alResponse.value[0].RUN_STATE;
     }
 
