@@ -6,38 +6,35 @@ import 'dotenv/config.js';
 // import {} from 'dotenv/config';
 // require('dotenv').config();
 
-const URL_PREFIX = 'https://papm-cloud-api-';
-const DEFAULT_TENANT = 'qam-papm';
-const DEFAULT_SPACE = 'prod-dev';
-const DOMAIN = '.cfapps.eu10.hana.ondemand.com/sap/opu/odata/NXI/';
-
 @Injectable()
 export class AppService {
   async RunAsync(runParam: RunParam) {
-    const tenant =
-      runParam.tenant !== undefined ? runParam.tenant : DEFAULT_TENANT;
-    const space = runParam.space !== undefined ? runParam.space : DEFAULT_SPACE;
+    const baseUrl = `https://papm-cloud-api-${runParam.space}.cfapps.eu10.hana.ondemand.com/sap/opu/odata/NXI/`;
+    const authUrl = `https://${runParam.tenant}.authentication.eu10.hana.ondemand.com/oauth/token?grant_type=client_credentials`;
 
-    const authUrl = `https://${tenant}.${process.env.AUTH_URL}`;
-    const base_auth =
-      tenant === DEFAULT_TENANT
-        ? process.env.BASIC_AUTH_PROD_DEV
-        : process.env.BASIC_AUTH_PROD_POV;
-
-    console.log('Authorization URL:', authUrl);
-    console.log('Authorization:', base_auth);
+    let baseAuth = '';
+    switch (runParam?.space) {
+      case 'prod-dev':
+        baseAuth = process.env.BASIC_AUTH_PROD_DEV;
+        break;
+      case 'prod-pov':
+        baseAuth = process.env.BASIC_AUTH_PROD_POV;
+        break;
+      default:
+        throw new Error(
+          `Credentials for space:${runParam.space} not available`,
+        );
+    }
 
     const tokenRequest = await fetch(authUrl, {
       method: 'post',
-      headers: { Authorization: base_auth },
+      headers: { Authorization: baseAuth },
     });
 
     const tokenResponse = await tokenRequest.json();
     const token = tokenResponse.access_token;
 
-    console.log(token);
-
-    const runUrl = `${URL_PREFIX}${tenant}.${space}${DOMAIN}P1_N_MOD_SRV/RunAsync?EnvId=${runParam.EnvId}&Ver=${runParam.Ver}&ProcId=''&Activity=''&Fid=${runParam.Fid}`;
+    const runUrl = `${baseUrl}P1_N_MOD_SRV/RunAsync?EnvId=${runParam.EnvId}&Ver=${runParam.Ver}&ProcId=''&Activity=''&Fid=${runParam.Fid}`;
     const runRequest = await fetch(runUrl, {
       method: 'post',
       headers: {
@@ -49,7 +46,7 @@ export class AppService {
     const runId = runResponse.d.Content.RUN_ID;
 
     let encodedUrl = encodeURI(
-      `${URL_PREFIX}${tenant}${DOMAIN}P1_N_APP_ODATA_SRV/Entities/AL?$filter=RUN_ID eq '${runId}'`,
+      `${baseUrl}P1_N_APP_ODATA_SRV/Entities/AL?$filter=RUN_ID eq '${runId}'`,
     );
 
     let runState = 'RUNNING';
@@ -67,7 +64,7 @@ export class AppService {
     }
 
     encodedUrl = encodeURI(
-      `${URL_PREFIX}${tenant}${DOMAIN}P1_N_APP_ODATA_SRV/Entities/ALMSG?$filter=RUN_ID eq '${runId}'`,
+      `${baseUrl}P1_N_APP_ODATA_SRV/Entities/ALMSG?$filter=RUN_ID eq '${runId}'`,
     );
     const almsgRequest = await fetch(encodedUrl, {
       headers: {
