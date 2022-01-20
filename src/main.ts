@@ -4,6 +4,7 @@ import 'dotenv/config.js';
 
 const CORS_ORIGINS = [
   'https://master-integration-t01.master.canary.eu10.projectorca.cloud',
+  'https://qrc-general-controlrelease.rel.canary.eu10.projectorca.cloud',
 ];
 
 async function bootstrap() {
