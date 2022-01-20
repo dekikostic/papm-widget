@@ -22,11 +22,11 @@
     }
 
     //function called from SAC Analytic Application
-    async run(system,tenant) {
+    async run(tenant, space) {
       const BASE_URL = 'http://localhost:3500/runAsync';
       try {
         const runRequest = await fetch(
-          `${BASE_URL}?EnvId='${this._props.env_id}'&Ver='${this._props.ver}'&ProcId=''&Activity=''&Fid='${this._props.fid}'&system=${system}&tenant=${tenant}`,
+          `${BASE_URL}?EnvId='${this._props.env_id}'&Ver='${this._props.ver}'&ProcId=''&Activity=''&Fid='${this._props.fid}'&tenant=${tenant}&space=${space}`,
           {
             method: 'POST',
           },
