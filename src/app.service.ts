@@ -24,6 +24,9 @@ export class AppService {
         ? process.env.BASIC_AUTH_PROD_DEV
         : process.env.BASIC_AUTH_PROD_POV;
 
+    console.log('Authorization URL:', authUrl);
+    console.log('Authorization:', base_auth);
+
     const tokenRequest = await fetch(authUrl, {
       method: 'post',
       headers: { Authorization: base_auth },
