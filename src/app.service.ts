@@ -52,7 +52,7 @@ export class AppService {
     let runState = 'RUNNING';
 
     while (runState === 'RUNNING') {
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       const alRequest = await fetch(encodedUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -62,7 +62,8 @@ export class AppService {
       const alResponse = await alRequest.json();
       runState = alResponse.value[0].RUN_STATE;
     }
-
+    // when partitioning used, almsg is not immediately populated
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     encodedUrl = encodeURI(
       `${baseUrl}P1_N_APP_ODATA_SRV/Entities/ALMSG?$filter=RUN_ID eq '${runId}'`,
     );
