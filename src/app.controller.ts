@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import type { RunParam } from './types';
