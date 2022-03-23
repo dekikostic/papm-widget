@@ -92,9 +92,9 @@ export class AppService {
 
     const almsgResponse = await almsgRequest.json();
     const messages = almsgResponse?.value
-      .filter((f) => !isEmpty(f.MSG_TEXT) && f.FID === runParam.Fid)
+      .filter((f) => !isEmpty(f.MSG_TEXT) && isEmpty(f.PACKAGE_ID)) // only last message
       .map((message) => `${message.MSGTY}###${message.MSG_TEXT}`);
-
+    console.log(almsgResponse?.value);
     messages.push('S###Run is completed');
     console.log(messages);
     console.log(new Date().toUTCString(), ` - Run is completed`);
